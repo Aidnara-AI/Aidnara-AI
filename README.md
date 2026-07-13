@@ -220,3 +220,5 @@ The check validates:
 ## Status
 
 Current repository status: PRD, backend baseline, blockchain contract, and Hardhat test suite prepared. Frontend scaffold and API runtime are next.
+
+© 2026 Aidnara AI. All rights reserved.
