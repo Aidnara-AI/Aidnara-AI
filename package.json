@@ -1,0 +1,7 @@
+{
+  "name": "veriaid-ai-prd",
+  "private": true,
+  "scripts": {
+    "check:mvp": "node scripts/verify-mvp.js"
+  }
+}
