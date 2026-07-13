@@ -1,5 +1,6 @@
 # dependencies
 node_modules/
+**/node_modules/
 
 # builds
 .next/
@@ -33,6 +34,10 @@ cache/
 artifacts/
 typechain-types/
 broadcast/
+**/cache/
+**/artifacts/
+**/typechain-types/
+**/broadcast/
 
 # local platform state
 .vercel/
