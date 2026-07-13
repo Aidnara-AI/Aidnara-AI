@@ -80,6 +80,9 @@ assertSourceExport('routes/storage.ts', 'prepareSignedUpload');
 assertSourceExport('routes/certificate-lookup.ts', 'lookupCertificate');
 assertSourceExport('services/ai-provider.ts', 'callGeminiJson');
 assertSourceExport('services/ai-provider.ts', 'parseJsonText');
+assertSourceExport('runtime/certificates.ts', 'generateAndStoreCertificate');
+assertSourceExport('runtime/certificates.ts', 'lookupCertificateFromSupabase');
 assertSourceExport('runtime/impact-report.ts', 'createImpactReportWithGemini');
+assertSourceExport('runtime/storage.ts', 'prepareSupabaseSignedUpload');
 
 console.log('OK: BE self-check passed.');

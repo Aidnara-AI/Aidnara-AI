@@ -31,6 +31,8 @@ Backend services for Aidnara AI.
 - `src/services/`: AI report, certificate, and storage service helpers.
 - `src/services/ai-provider.ts`: Gemini JSON provider boundary.
 - `src/runtime/impact-report.ts`: ready-to-wire Gemini impact report runtime.
+- `src/runtime/certificates.ts`: certificate generation, persistence, and lookup runtime.
+- `src/runtime/storage.ts`: Supabase signed upload runtime.
 - `src/lib/supabase-admin.ts`: server-only Supabase service role client.
 - `src/services/supabase-storage.ts`: Supabase signed upload helper.
 - `src/routes/`: runtime-agnostic route handlers.
