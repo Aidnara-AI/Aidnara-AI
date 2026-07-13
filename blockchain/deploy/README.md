@@ -7,6 +7,13 @@
 - Token: `tBNB`
 - Explorer: `https://testnet.bscscan.com`
 
+Temporary fallback network:
+
+- Network: Polygon Amoy
+- Chain ID: `80002`
+- Token: `POL`
+- Explorer: `https://amoy.polygonscan.com`
+
 ## Contract
 
 - `contracts/AidnaraAidRegistry.sol`
@@ -15,8 +22,10 @@
 
 ```text
 BNB_TESTNET_RPC_URL=
+POLYGON_AMOY_RPC_URL=https://rpc-amoy.polygon.technology
 DEPLOYER_PRIVATE_KEY=
 BSCSCAN_API_KEY=
+POLYGONSCAN_API_KEY=
 ```
 
 ## Deployment Output To Save
@@ -30,5 +39,12 @@ BSCSCAN_API_KEY=
 
 ```text
 NEXT_PUBLIC_CHAIN_ID=97
+NEXT_PUBLIC_CONTRACT_ADDRESS=<deployed-contract-address>
+```
+
+For Polygon Amoy fallback:
+
+```text
+NEXT_PUBLIC_CHAIN_ID=80002
 NEXT_PUBLIC_CONTRACT_ADDRESS=<deployed-contract-address>
 ```

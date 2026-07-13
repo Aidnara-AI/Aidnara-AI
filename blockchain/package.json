@@ -4,6 +4,7 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
+    "deploy:amoy": "hardhat run scripts/deploy.ts --network polygonAmoy",
     "deploy:testnet": "hardhat run scripts/deploy.ts --network bnbTestnet"
   },
   "devDependencies": {
