@@ -19,5 +19,6 @@ export function readServerEnv(env: NodeJS.ProcessEnv = process.env) {
     supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL!,
     supabaseServiceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY!,
     aiApiKey: env.AI_API_KEY!,
+    aiModel: env.AI_MODEL || 'gemini-1.5-flash',
   };
 }

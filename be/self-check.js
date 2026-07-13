@@ -78,5 +78,8 @@ assertSourceExport('routes/ai-impact-report.ts', 'handleCreateImpactReport');
 assertSourceExport('routes/certificates.ts', 'handleGenerateCertificate');
 assertSourceExport('routes/storage.ts', 'prepareSignedUpload');
 assertSourceExport('routes/certificate-lookup.ts', 'lookupCertificate');
+assertSourceExport('services/ai-provider.ts', 'callGeminiJson');
+assertSourceExport('services/ai-provider.ts', 'parseJsonText');
+assertSourceExport('runtime/impact-report.ts', 'createImpactReportWithGemini');
 
 console.log('OK: BE self-check passed.');
