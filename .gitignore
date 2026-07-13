@@ -43,3 +43,5 @@ broadcast/
 # local platform state
 .vercel/
 .supabase/
+.omx/
+.agents/
