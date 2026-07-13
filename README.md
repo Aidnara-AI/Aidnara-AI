@@ -1,5 +1,9 @@
 # Aidnara AI
 
+<div align="center">
+  <img src="docs/logo/aidnara_ai_logo.png" alt="Aidnara AI logo" width="160" />
+</div>
+
 **Transparent Aid, Verified Impact**
 
 Aidnara AI is a transparent donation platform on **BNB Smart Chain** that helps donors track fund usage, view AI-generated impact reports, and verify certificate of impact records on-chain.
