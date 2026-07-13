@@ -29,6 +29,8 @@ Backend services for Aidnara AI.
 - `db/migrations/`: versioned schema and RLS migrations.
 - `db/storage.md`: storage bucket plan and upload rules.
 - `src/services/`: AI report, certificate, and storage service helpers.
+- `src/lib/supabase-admin.ts`: server-only Supabase service role client.
+- `src/services/supabase-storage.ts`: Supabase signed upload helper.
 - `src/routes/`: runtime-agnostic route handlers.
 - `src/lib/requests.ts`: request validation for API payloads.
 - `src/repositories/`: thin database repository layer.
@@ -38,4 +40,5 @@ Backend services for Aidnara AI.
 
 ```bash
 npm run check
+npm run typecheck
 ```
