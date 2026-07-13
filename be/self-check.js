@@ -98,10 +98,15 @@ assertSourceExport('runtime/donations.ts', 'listDonationsRuntime');
 assertSourceExport('runtime/donations.ts', 'linkDonationCertificateRuntime');
 assertSourceExport('runtime/impact-report.ts', 'createImpactReportWithGemini');
 assertSourceExport('runtime/impact-report.ts', 'backendRateLimits.aiReport');
+assertSourceExport('runtime/onchain.ts', 'validateDonationTransactionRuntime');
+assertSourceExport('runtime/onchain.ts', 'validateProofTransactionRuntime');
+assertSourceExport('runtime/onchain.ts', 'validateCertificateTransactionRuntime');
 assertSourceExport('runtime/proofs.ts', 'createProofRuntime');
 assertSourceExport('runtime/proofs.ts', 'backendRateLimits.proof');
 assertSourceExport('runtime/proofs.ts', 'attachProofImpactReportRuntime');
 assertSourceExport('runtime/storage.ts', 'prepareSupabaseSignedUpload');
 assertSourceExport('runtime/storage.ts', 'backendRateLimits.upload');
+assertSourceExport('services/onchain.ts', 'validateDonationEvent');
+assertSourceExport('services/onchain.ts', 'DonationReceived');
 
 console.log('OK: BE self-check passed.');
