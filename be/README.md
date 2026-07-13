@@ -35,11 +35,13 @@ Backend services for Aidnara AI.
 - `src/runtime/campaigns.ts`: campaign create/list/detail and chain metadata runtime.
 - `src/runtime/donations.ts`: donation cache, donation history, and donor certificate linking runtime.
 - `src/runtime/onchain.ts`: BNB Smart Chain transaction/event validation runtime.
+- `src/runtime/onchain-sync.ts`: read-only contract event range sync runtime.
 - `src/runtime/proofs.ts`: owner-checked proof creation and AI report persistence runtime.
 - `src/runtime/storage.ts`: Supabase signed upload runtime.
 - `src/lib/supabase-admin.ts`: server-only Supabase service role client.
 - `src/services/supabase-storage.ts`: Supabase signed upload helper.
 - `src/services/onchain.ts`: ethers-based contract event validation helpers.
+- `src/services/onchain-events.ts`: ethers-based event indexer helpers.
 - `src/routes/`: runtime-agnostic route handlers.
 - `src/lib/requests.ts`: request validation for API payloads.
 - `src/lib/rate-limit.ts`: dependency-free abuse guard for AI, proof, upload, and certificate actions.
