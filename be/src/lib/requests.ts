@@ -2,6 +2,7 @@ import { type ImpactReportInput } from '../services/ai-impact-report';
 import { type CertificatePayload, type CertificateType } from '../services/certificate';
 import { type UploadCandidate } from '../services/storage';
 import { type CampaignInsert } from '../repositories/campaigns';
+import { type DonationInsert } from '../repositories/donations';
 import { type ProofInsert } from '../repositories/proofs';
 import { requireOptionalString, requirePositiveNumberString, requireString } from './http';
 import { assertWalletAddress } from './validate';
@@ -105,6 +106,28 @@ export function parseCreateProofRequest(body: unknown): { ownerAddress: string; 
       proof_uri: requireOptionalString(input.proofUri, 'proofUri'),
       submit_tx_hash: requireOptionalString(input.submitTxHash, 'submitTxHash'),
     },
+  };
+}
+
+export function parseCreateDonationRequest(body: unknown): DonationInsert {
+  const input = asRecord(body);
+  const donorAddress = requireString(input.donorAddress, 'donorAddress');
+  assertWalletAddress(donorAddress);
+
+  return {
+    campaign_id: requireString(input.campaignId, 'campaignId'),
+    donor_address: donorAddress,
+    amount: requirePositiveNumberString(input.amount, 'amount'),
+    tx_hash: requireString(input.txHash, 'txHash'),
+  };
+}
+
+export function parseLinkDonationCertificateRequest(body: unknown) {
+  const input = asRecord(body);
+
+  return {
+    donationId: requireString(input.donationId, 'donationId'),
+    certificateId: requireString(input.certificateId, 'certificateId'),
   };
 }
 
