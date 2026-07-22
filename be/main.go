@@ -25,7 +25,10 @@ func main() {
 	// Load .env file
 	err := godotenv.Load()
 	if err != nil {
-		log.Println("Warning: Error loading .env file, falling back to OS env or defaults")
+		err = godotenv.Load("be/.env")
+		if err != nil {
+			log.Println("Warning: Error loading .env file, falling back to OS env or defaults")
+		}
 	}
 
 	// Initialize Local Storage Directories
