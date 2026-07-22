@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"aidnara-be/handlers"
 	"aidnara-be/services"
@@ -17,6 +18,8 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
+
+var startTime = time.Now()
 
 func main() {
 	// Load .env file
@@ -90,8 +93,11 @@ func main() {
 	// Simple health check route
 	api.Get("/health", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
-			"status": "ok",
-			"db":     "connected",
+			"name":    "Aidnara AI",
+			"version": "1.0.0",
+			"status":  "ok",
+			"db":      "connected",
+			"uptime":  time.Since(startTime).String(),
 		})
 	})
 
