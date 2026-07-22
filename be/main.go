@@ -22,14 +22,10 @@ import (
 var startTime = time.Now()
 
 func main() {
-	// Load .env file
-	err := godotenv.Load()
-	if err != nil {
-		err = godotenv.Load("be/.env")
-		if err != nil {
-			log.Println("Warning: Error loading .env file, falling back to OS env or defaults")
-		}
-	}
+	// Load .env file (ignore error, falling back to OS env variables)
+	_ = godotenv.Load()
+	_ = godotenv.Load("be/.env")
+
 
 	// Initialize Local Storage Directories
 	if err := services.InitStorage(); err != nil {
