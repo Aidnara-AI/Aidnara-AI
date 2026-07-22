@@ -19,7 +19,7 @@ export default function Home() {
           class="w-32 md:w-40 h-auto mb-6 drop-shadow-[0_0_15px_rgba(37,99,235,0.3)]"
         />
         <h1 class="text-[clamp(48px,9vw,112px)] leading-[0.95] m-0 font-bold">
-          Empower with <span class="text-blue-500">Aidnara</span>
+          Empower with <span class="text-blue-500">Aidnara AI</span>
         </h1>
         <p class="max-w-[720px] text-muted text-[clamp(18px,2vw,24px)] leading-[1.6] mt-6">
           Human-centered aid with AI-verified impact. 
