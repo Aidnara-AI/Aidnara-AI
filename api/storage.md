@@ -17,6 +17,23 @@ app.Static("/uploads", "./uploads")
 ```
 Access a file directly via HTTP: `http://localhost:3000/uploads/proofs/123-receipt.png`
 
-## Upload Routes (Planned)
+## Upload Route
 
-Clients can upload files using standard `multipart/form-data` requests to the respective endpoints (to be integrated directly into `/api/proofs` or a dedicated `/api/upload` endpoint) where the Go server handles parsing, verifying file types/sizes, and writing to the disk securely.
+Clients upload files using `multipart/form-data`.
+
+```http
+POST /api/uploads
+```
+
+Fields:
+
+- `kind`: `campaign-cover`, `proof`, or `certificate`
+- `file`: uploaded file
+
+Response:
+
+```json
+{
+  "path": "/uploads/proofs/generated-name.png"
+}
+```

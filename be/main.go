@@ -63,6 +63,7 @@ func main() {
 	donationHandler := handlers.NewDonationHandler(conn)
 	proofHandler := handlers.NewProofHandler(conn)
 	certHandler := handlers.NewCertificateHandler(conn)
+	uploadHandler := handlers.NewUploadHandler()
 
 	// Initialize Fiber app
 	app := fiber.New()
@@ -85,6 +86,7 @@ func main() {
 
 	// Routes - Proofs & Impact Reports
 	api.Post("/proofs", proofHandler.CreateProof)
+	api.Post("/uploads", uploadHandler.UploadFile)
 
 	// Routes - Certificates
 	api.Post("/certificates", certHandler.CreateCertificate)

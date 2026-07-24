@@ -45,6 +45,57 @@ export default function CampaignDetailPage() {
     }
   }
 
+  async function submitProof(event: SubmitEvent) {
+    event.preventDefault();
+    const form = event.currentTarget as HTMLFormElement;
+    const formData = new FormData(form);
+    const file = formData.get("file");
+
+    if (!(file instanceof File)) {
+      setProofStatus("Proof file is required.");
+      return;
+    }
+
+    setProofStatus("Uploading proof file...");
+
+    try {
+      const fileHash = await sha256Hex(file);
+      const upload = new FormData();
+      upload.set("kind", "proof");
+      upload.set("file", file);
+
+      const uploadResponse = await fetch("/api/uploads", { method: "POST", body: upload });
+      if (!uploadResponse.ok) throw new Error("Upload failed");
+      const uploaded = await uploadResponse.json();
+
+      const proofResponse = await fetch("/api/proofs", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          campaign_id: params.id,
+          title: formData.get("title"),
+          description: formData.get("description"),
+          amount_used: formData.get("amount_used"),
+          impact_claim: formData.get("impact_claim"),
+          file_url: uploaded.path,
+          file_hash: fileHash,
+        }),
+      });
+
+      if (!proofResponse.ok) throw new Error("Proof API rejected the request");
+      setProofStatus("Proof saved with SHA-256 hash.");
+      form.reset();
+    } catch {
+      setProofStatus("Could not save proof yet. Check upload, backend API, and database config.");
+    }
+  }
+
+  async function sha256Hex(file: File) {
+    const bytes = await file.arrayBuffer();
+    const hash = await crypto.subtle.digest("SHA-256", bytes);
+    return `0x${Array.from(new Uint8Array(hash)).map((byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+  }
+
   return (
     <main class="w-[min(760px,calc(100%-32px))] mx-auto py-16 grid gap-6">
       {notice() && <p class="rounded-2xl border border-yellow-300/30 bg-yellow-300/10 p-4 text-gold">{notice()}</p>}
@@ -81,7 +132,7 @@ export default function CampaignDetailPage() {
         {donationStatus() && <p class="rounded-2xl border border-yellow-300/30 bg-yellow-300/10 p-4 text-gold">{donationStatus()}</p>}
       </form>
 
-      <form class="grid gap-4 rounded-3xl border border-white/10 bg-[#0f1b2d]/70 p-6" onSubmit={(event) => submitJson(event, "/api/proofs", setProofStatus)}>
+      <form class="grid gap-4 rounded-3xl border border-white/10 bg-[#0f1b2d]/70 p-6" onSubmit={submitProof}>
         <h2 class="text-3xl font-bold">Submit Proof</h2>
         <p class="text-muted">Upload metadata for proof of fund usage. AI analysis runs in the backend.</p>
         <label class="grid gap-2 font-bold">
@@ -101,12 +152,8 @@ export default function CampaignDetailPage() {
           <textarea class="min-h-24 rounded-xl border border-white/10 bg-bg p-3" name="impact_claim" placeholder="Dampak dari dana yang digunakan." required />
         </label>
         <label class="grid gap-2 font-bold">
-          File URL
-          <input class="rounded-xl border border-white/10 bg-bg p-3" name="file_url" type="url" placeholder="https://example.com/proof.png" required />
-        </label>
-        <label class="grid gap-2 font-bold">
-          File hash
-          <input class="rounded-xl border border-white/10 bg-bg p-3" name="file_hash" placeholder="0x..." required />
+          Proof file
+          <input class="rounded-xl border border-white/10 bg-bg p-3" name="file" type="file" accept="image/*,application/pdf" required />
         </label>
         <button class="rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 px-5 py-3 font-extrabold text-white" type="submit">
           Save Proof
