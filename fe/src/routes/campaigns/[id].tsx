@@ -1,14 +1,17 @@
 import { useParams } from "@solidjs/router";
-import { createSignal, onMount } from "solid-js";
+import { For, createMemo, createSignal, onMount } from "solid-js";
 import { demoCampaigns, type DemoCampaign } from "../demo-campaigns";
 
 export default function CampaignDetailPage() {
   const params = useParams();
   const [campaign, setCampaign] = createSignal<DemoCampaign | undefined>();
+  const [donations, setDonations] = createSignal<Record<string, unknown>[]>([]);
+  const [proofs, setProofs] = createSignal<Record<string, unknown>[]>([]);
   const [notice, setNotice] = createSignal("Loading campaign...");
   const [donationStatus, setDonationStatus] = createSignal("");
   const [proofStatus, setProofStatus] = createSignal("");
   const [certificateStatus, setCertificateStatus] = createSignal("");
+  const [issueStatus, setIssueStatus] = createSignal("");
 
   onMount(async () => {
     try {
@@ -21,7 +24,25 @@ export default function CampaignDetailPage() {
       setCampaign(demoCampaign);
       setNotice(demoCampaign ? "Campaign API unavailable. Showing demo data." : "Campaign not found.");
     }
+
+    try {
+      const response = await fetch(`/api/campaigns/${params.id}/donations`);
+      if (response.ok) setDonations(await response.json());
+    } catch {
+      setDonations([]);
+    }
+
+    try {
+      const response = await fetch(`/api/campaigns/${params.id}/proofs`);
+      if (response.ok) setProofs(await response.json());
+    } catch {
+      setProofs([]);
+    }
   });
+
+  const totalDonated = createMemo(() => sumField(donations(), "amount"));
+  const totalProofAmount = createMemo(() => sumField(proofs(), "amount_used"));
+  const remainingEstimate = createMemo(() => Math.max(Number(campaign()?.target_amount || 0) - totalDonated(), 0));
 
   async function submitJson(event: SubmitEvent, url: string, setMessage: (message: string) => void) {
     event.preventDefault();
@@ -90,6 +111,28 @@ export default function CampaignDetailPage() {
     }
   }
 
+  async function issueCertificate(event: SubmitEvent) {
+    event.preventDefault();
+    const form = event.currentTarget as HTMLFormElement;
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    setIssueStatus("Saving...");
+
+    try {
+      const response = await fetch(`/api/certificates/${data.certificate_id}/issue`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ tx_hash: data.tx_hash }),
+      });
+
+      if (!response.ok) throw new Error("API rejected the request");
+      setIssueStatus("Certificate issuance saved.");
+      form.reset();
+    } catch {
+      setIssueStatus("Could not issue certificate yet. Check certificate ID and chain tx hash.");
+    }
+  }
+
   async function sha256Hex(file: File) {
     const bytes = await file.arrayBuffer();
     const hash = await crypto.subtle.digest("SHA-256", bytes);
@@ -110,6 +153,44 @@ export default function CampaignDetailPage() {
           </div>
         </article>
       )}
+
+      <section class="grid gap-4 rounded-3xl border border-white/10 bg-[#0f1b2d]/70 p-6">
+        <h2 class="text-3xl font-bold">Transparency Dashboard</h2>
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+          <span class="rounded-2xl bg-cyan-500/10 p-4 font-bold">Total donated: {totalDonated()}</span>
+          <span class="rounded-2xl bg-cyan-500/10 p-4 font-bold">Proof amount: {totalProofAmount()}</span>
+          <span class="rounded-2xl bg-cyan-500/10 p-4 font-bold">Remaining estimate: {remainingEstimate()}</span>
+        </div>
+        <div class="grid gap-3">
+          <h3 class="text-2xl font-bold">Donation Timeline</h3>
+          {donations().length === 0 && <p class="text-muted">No donations recorded yet.</p>}
+          <For each={donations()}>
+            {(donation) => (
+              <article class="grid gap-1 rounded-2xl border border-white/10 p-4 text-muted">
+                <strong class="text-white">{String(donation.donor_address || "Unknown donor")}</strong>
+                <code class="break-all">Donation ID: {String(donation.id || "unknown")}</code>
+                <span>Amount: {displayAmount(donation.amount)}</span>
+                <code class="break-all">{String(donation.tx_hash || "No tx hash")}</code>
+              </article>
+            )}
+          </For>
+        </div>
+        <div class="grid gap-3">
+          <h3 class="text-2xl font-bold">Proof Timeline</h3>
+          {proofs().length === 0 && <p class="text-muted">No proofs submitted yet.</p>}
+          <For each={proofs()}>
+            {(proof) => (
+              <article class="grid gap-1 rounded-2xl border border-white/10 p-4 text-muted">
+                <strong class="text-white">{String(proof.title || "Untitled proof")}</strong>
+                <code class="break-all">Proof ID: {String(proof.id || "unknown")}</code>
+                <span>Status: {String(proof.ai_status || "pending")}</span>
+                <span>Amount used: {displayAmount(proof.amount_used)}</span>
+                <code class="break-all">{String(proof.file_hash || "No file hash")}</code>
+              </article>
+            )}
+          </For>
+        </div>
+      </section>
 
       <form class="grid gap-4 rounded-3xl border border-white/10 bg-[#0f1b2d]/70 p-6" onSubmit={(event) => submitJson(event, "/api/donations", setDonationStatus)}>
         <h2 class="text-3xl font-bold">Record Donation</h2>
@@ -192,6 +273,33 @@ export default function CampaignDetailPage() {
         </button>
         {certificateStatus() && <p class="rounded-2xl border border-yellow-300/30 bg-yellow-300/10 p-4 text-gold">{certificateStatus()}</p>}
       </form>
+
+      <form class="grid gap-4 rounded-3xl border border-white/10 bg-[#0f1b2d]/70 p-6" onSubmit={issueCertificate}>
+        <h2 class="text-3xl font-bold">Issue Certificate</h2>
+        <p class="text-muted">Attach an on-chain issuance transaction hash to an existing certificate.</p>
+        <label class="grid gap-2 font-bold">
+          Certificate ID
+          <input class="rounded-xl border border-white/10 bg-bg p-3" name="certificate_id" placeholder="uuid" required />
+        </label>
+        <label class="grid gap-2 font-bold">
+          Issuance transaction hash
+          <input class="rounded-xl border border-white/10 bg-bg p-3" name="tx_hash" placeholder="0x..." required />
+        </label>
+        <button class="rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 px-5 py-3 font-extrabold text-white" type="submit">
+          Save Issuance
+        </button>
+        {issueStatus() && <p class="rounded-2xl border border-yellow-300/30 bg-yellow-300/10 p-4 text-gold">{issueStatus()}</p>}
+      </form>
     </main>
   );
+}
+
+function displayAmount(value: unknown) {
+  if (typeof value === "number" || typeof value === "string") return String(value);
+  if (value && typeof value === "object" && "Int" in value) return String((value as { Int: unknown }).Int);
+  return "0";
+}
+
+function sumField(rows: Record<string, unknown>[], field: string) {
+  return rows.reduce((sum, row) => sum + Number(displayAmount(row[field]) || 0), 0);
 }

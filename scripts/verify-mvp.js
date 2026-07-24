@@ -70,7 +70,7 @@ const requiredTerms = [
   ['api/event-sync.md', ['Event sync persistence', 'DonationReceived', 'CertificateIssued']],
   ['fe/src/routes/campaigns.tsx', ['demoCampaigns', 'Campaign API unavailable', 'Start Campaign']],
   ['fe/src/routes/campaigns/create.tsx', ['owner_address', 'POST', '/api/uploads', '/api/campaigns', 'Create Campaign']],
-  ['fe/src/routes/campaigns/[id].tsx', ['useParams', 'Campaign API unavailable', 'trust score', '/api/donations', '/api/uploads', '/api/proofs', 'SHA-256', '/api/certificates']],
+  ['fe/src/routes/campaigns/[id].tsx', ['useParams', 'Campaign API unavailable', 'Transparency Dashboard', 'Donation Timeline', 'Proof Timeline', '/api/donations', '/api/uploads', '/api/proofs', 'SHA-256', '/api/certificates', '/issue']],
   ['fe/src/routes/verify/certificate/[hash].tsx', ['Verify Certificate', '/api/certificates/hash/', 'demo-certificate-hash']],
   ['api/ai-impact-report.md', ['POST /api/proofs', 'trust_score']],
   ['api/certificates.md', ['POST /api/certificates', 'GET /api/certificates/hash/:hash', 'tx_hash']],
