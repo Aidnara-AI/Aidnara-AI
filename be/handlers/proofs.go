@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"os"
+	"strings"
 
 	"aidnara-be/db/sqlc"
 	"aidnara-be/services"
@@ -59,6 +61,19 @@ func (h *ProofHandler) CreateProof(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid input"})
 	}
+	req.Title = strings.TrimSpace(req.Title)
+	req.Description = strings.TrimSpace(req.Description)
+	req.AmountUsed = strings.TrimSpace(req.AmountUsed)
+	req.ImpactClaim = strings.TrimSpace(req.ImpactClaim)
+	req.FileUrl = strings.TrimSpace(req.FileUrl)
+	req.FileHash = strings.TrimSpace(req.FileHash)
+	if req.Title == "" || req.Description == "" || req.ImpactClaim == "" || req.FileUrl == "" || req.FileHash == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Missing required proof fields"})
+	}
+	amountRat, ok := new(big.Rat).SetString(req.AmountUsed)
+	if !ok || amountRat.Sign() <= 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Amount used must be greater than zero"})
+	}
 
 	campaignUUID, err := uuid.Parse(req.CampaignID)
 	if err != nil {
@@ -66,7 +81,9 @@ func (h *ProofHandler) CreateProof(c *fiber.Ctx) error {
 	}
 
 	var amountNum pgtype.Numeric
-	amountNum.Scan(req.AmountUsed)
+	if err := amountNum.Scan(req.AmountUsed); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid amount used format"})
+	}
 
 	proof, err := h.Queries.CreateProof(context.Background(), db.CreateProofParams{
 		CampaignID:  pgtype.UUID{Bytes: campaignUUID, Valid: true},
@@ -90,7 +107,7 @@ func (h *ProofHandler) CreateProof(c *fiber.Ctx) error {
 func (h *ProofHandler) analyzeProofWithAI(proof db.Proof) {
 	// Call Gemini Provider
 	prompt := fmt.Sprintf("Analyze this proof for a campaign.\nTitle: %s\nDescription: %s\nClaim: %s\nEvaluate trust score (0-100), consistency, and risk.", proof.Title, proof.Description, proof.ImpactClaim)
-	
+
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
 		fmt.Println("AI Provider skipped: GEMINI_API_KEY is not configured")

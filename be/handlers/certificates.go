@@ -122,6 +122,10 @@ func (h *CertificateHandler) UpdateCertificateTxHash(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid input"})
 	}
+	req.TxHash = strings.TrimSpace(req.TxHash)
+	if !validTxHash(req.TxHash) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid transaction hash"})
+	}
 
 	// Verify on-chain logic (omitted full validation for brevity, but follows same pattern as donations)
 

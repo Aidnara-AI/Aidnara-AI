@@ -4,6 +4,7 @@ import (
 	"context"
 	"math/big"
 	"os"
+	"strings"
 
 	"aidnara-be/db/sqlc"
 	"aidnara-be/services"
@@ -38,6 +39,15 @@ func (h *DonationHandler) CreateDonation(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid JSON"})
 	}
+	req.TxHash = strings.TrimSpace(req.TxHash)
+	req.Donor = strings.TrimSpace(req.Donor)
+	req.Amount = strings.TrimSpace(req.Amount)
+	if !validTxHash(req.TxHash) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid transaction hash"})
+	}
+	if req.Donor == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Donor address is required"})
+	}
 
 	campaignUUID, err := uuid.Parse(req.CampaignID)
 	if err != nil {
@@ -58,6 +68,9 @@ func (h *DonationHandler) CreateDonation(c *fiber.Ctx) error {
 	amountBigInt, ok := new(big.Int).SetString(req.Amount, 10)
 	if !ok {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid amount format"})
+	}
+	if amountBigInt.Sign() <= 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Amount must be greater than zero"})
 	}
 
 	rpcURL := os.Getenv("RPC_URL")
@@ -84,7 +97,9 @@ func (h *DonationHandler) CreateDonation(c *fiber.Ctx) error {
 
 	// Store in DB
 	var amountNum pgtype.Numeric
-	amountNum.Scan(req.Amount)
+	if err := amountNum.Scan(req.Amount); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid amount format"})
+	}
 
 	donation, err := h.Queries.CreateDonation(context.Background(), db.CreateDonationParams{
 		CampaignID:   campaignPgUUID,
