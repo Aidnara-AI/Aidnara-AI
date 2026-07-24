@@ -171,6 +171,11 @@ export default function CampaignDetailPage() {
                 <code class="break-all">Donation ID: {String(donation.id || "unknown")}</code>
                 <span>Amount: {displayAmount(donation.amount)}</span>
                 <code class="break-all">{String(donation.tx_hash || "No tx hash")}</code>
+                {donation.tx_hash && (
+                  <a class="text-cyan-300 underline" href={explorerTxUrl(String(donation.tx_hash))} target="_blank">
+                    View donation on BscScan
+                  </a>
+                )}
               </article>
             )}
           </For>
@@ -186,6 +191,11 @@ export default function CampaignDetailPage() {
                 <span>Status: {String(proof.ai_status || "pending")}</span>
                 <span>Amount used: {displayAmount(proof.amount_used)}</span>
                 <code class="break-all">{String(proof.file_hash || "No file hash")}</code>
+                {proof.submit_tx_hash && (
+                  <a class="text-cyan-300 underline" href={explorerTxUrl(String(proof.submit_tx_hash))} target="_blank">
+                    View proof submission on BscScan
+                  </a>
+                )}
               </article>
             )}
           </For>
@@ -302,4 +312,8 @@ function displayAmount(value: unknown) {
 
 function sumField(rows: Record<string, unknown>[], field: string) {
   return rows.reduce((sum, row) => sum + Number(displayAmount(row[field]) || 0), 0);
+}
+
+function explorerTxUrl(txHash: string) {
+  return `https://testnet.bscscan.com/tx/${txHash}`;
 }
