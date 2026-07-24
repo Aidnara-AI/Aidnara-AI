@@ -257,6 +257,30 @@ func (q *Queries) GetCertificate(ctx context.Context, id pgtype.UUID) (Certifica
 	return i, err
 }
 
+const getCertificateByHash = `-- name: GetCertificateByHash :one
+SELECT id, campaign_id, donation_id, proof_id, recipient_address, certificate_type, certificate_uri, certificate_hash, issue_tx_hash, status, issued_at FROM certificates
+WHERE certificate_hash = $1 LIMIT 1
+`
+
+func (q *Queries) GetCertificateByHash(ctx context.Context, certificateHash string) (Certificate, error) {
+	row := q.db.QueryRow(ctx, getCertificateByHash, certificateHash)
+	var i Certificate
+	err := row.Scan(
+		&i.ID,
+		&i.CampaignID,
+		&i.DonationID,
+		&i.ProofID,
+		&i.RecipientAddress,
+		&i.CertificateType,
+		&i.CertificateUri,
+		&i.CertificateHash,
+		&i.IssueTxHash,
+		&i.Status,
+		&i.IssuedAt,
+	)
+	return i, err
+}
+
 const getDonation = `-- name: GetDonation :one
 SELECT id, campaign_id, donor_address, amount, tx_hash, certificate_id, created_at FROM donations
 WHERE id = $1 LIMIT 1

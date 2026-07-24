@@ -88,6 +88,7 @@ func main() {
 
 	// Routes - Certificates
 	api.Post("/certificates", certHandler.CreateCertificate)
+	api.Get("/certificates/hash/:hash", certHandler.GetCertificateByHash)
 	api.Post("/certificates/:id/issue", certHandler.UpdateCertificateTxHash)
 
 	// Simple health check route

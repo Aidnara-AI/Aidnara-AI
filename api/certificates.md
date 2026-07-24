@@ -29,7 +29,27 @@ Updates the on-chain issuance transaction hash for an existing certificate.
 }
 ```
 
+## GET /api/certificates/hash/:hash
+
+Looks up certificate verification data by deterministic certificate hash.
+
+### Response
+
+```json
+{
+  "status": "issued",
+  "certificate_type": "donor",
+  "campaign_id": "uuid-string",
+  "recipient_address": "0x0000000000000000000000000000000000000000",
+  "certificate_uri": "https://example.com/certificate.html",
+  "certificate_hash": "0xhash",
+  "issued_at": "2026-07-24T00:00:00Z",
+  "issue_tx_hash": "0xhashofissuance"
+}
+```
+
 ## Rules
 
 - Certificate records must match existing campaigns, donations, and proofs in the PostgreSQL database.
 - Smart Contract verification ensures the actual issuance exists on-chain before the `tx_hash` is updated.
+- Unknown hashes return `404`.

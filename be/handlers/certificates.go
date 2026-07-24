@@ -23,6 +23,30 @@ func NewCertificateHandler(conn *pgx.Conn) *CertificateHandler {
 	}
 }
 
+// GET /api/certificates/hash/:hash
+func (h *CertificateHandler) GetCertificateByHash(c *fiber.Ctx) error {
+	certificateHash := c.Params("hash")
+	if certificateHash == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Certificate hash is required"})
+	}
+
+	cert, err := h.Queries.GetCertificateByHash(c.Context(), certificateHash)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Certificate not found"})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":            cert.Status,
+		"certificate_type":  cert.CertificateType,
+		"campaign_id":       cert.CampaignID,
+		"recipient_address": cert.RecipientAddress,
+		"certificate_uri":   cert.CertificateUri,
+		"certificate_hash":  cert.CertificateHash,
+		"issued_at":         cert.IssuedAt,
+		"issue_tx_hash":     cert.IssueTxHash,
+	})
+}
+
 // POST /api/certificates
 func (h *CertificateHandler) CreateCertificate(c *fiber.Ctx) error {
 	type Request struct {

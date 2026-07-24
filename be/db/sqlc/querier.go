@@ -17,6 +17,7 @@ type Querier interface {
 	CreateProof(ctx context.Context, arg CreateProofParams) (Proof, error)
 	GetCampaign(ctx context.Context, id pgtype.UUID) (Campaign, error)
 	GetCertificate(ctx context.Context, id pgtype.UUID) (Certificate, error)
+	GetCertificateByHash(ctx context.Context, certificateHash string) (Certificate, error)
 	GetDonation(ctx context.Context, id pgtype.UUID) (Donation, error)
 	GetDonationByTxHash(ctx context.Context, txHash string) (Donation, error)
 	GetDonationsByCampaign(ctx context.Context, campaignID pgtype.UUID) ([]Donation, error)

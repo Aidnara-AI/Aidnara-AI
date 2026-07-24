@@ -25,6 +25,7 @@ API contract and endpoint specifications for the new Aidnara AI Go Backend.
 
 ### Certificates
 - `POST /api/certificates`
+- `GET /api/certificates/hash/:hash`
 - `POST /api/certificates/:id/issue`
 
 ### System

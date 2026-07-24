@@ -71,6 +71,10 @@ WHERE id = $1;
 SELECT * FROM certificates
 WHERE id = $1 LIMIT 1;
 
+-- name: GetCertificateByHash :one
+SELECT * FROM certificates
+WHERE certificate_hash = $1 LIMIT 1;
+
 -- name: CreateCertificate :one
 INSERT INTO certificates (
   campaign_id, donation_id, proof_id, recipient_address, certificate_type, certificate_hash
