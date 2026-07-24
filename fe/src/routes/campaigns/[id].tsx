@@ -265,8 +265,8 @@ export default function CampaignDetailPage() {
           </select>
         </label>
         <label class="grid gap-2 font-bold">
-          Certificate hash
-          <input class="rounded-xl border border-white/10 bg-bg p-3" name="certificate_hash" placeholder="0x..." required />
+          Certificate hash (optional)
+          <input class="rounded-xl border border-white/10 bg-bg p-3" name="certificate_hash" placeholder="Leave empty to generate from campaign, donation, proof, recipient, and type." />
         </label>
         <button class="rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 px-5 py-3 font-extrabold text-white" type="submit">
           Save Certificate

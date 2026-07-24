@@ -17,6 +17,8 @@ Registers a new certificate record linking a campaign, a donation, and a proof.
 }
 ```
 
+`certificate_hash` is optional. When omitted, the backend generates a deterministic SHA-256 hash from `campaign_id`, `donation_id`, `proof_id`, `recipient_address`, and `certificate_type`.
+
 ## POST /api/certificates/:id/issue
 
 Updates the on-chain issuance transaction hash for an existing certificate.

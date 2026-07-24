@@ -2,6 +2,9 @@ package handlers
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"strings"
 
 	"aidnara-be/db/sqlc"
 
@@ -63,17 +66,39 @@ func (h *CertificateHandler) CreateCertificate(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid input"})
 	}
 
-	campUUID, _ := uuid.Parse(req.CampaignID)
-	donUUID, _ := uuid.Parse(req.DonationID)
-	proofUUID, _ := uuid.Parse(req.ProofID)
+	campUUID, err := uuid.Parse(req.CampaignID)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid campaign ID"})
+	}
+	donUUID, err := uuid.Parse(req.DonationID)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid donation ID"})
+	}
+	proofUUID, err := uuid.Parse(req.ProofID)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid proof ID"})
+	}
+
+	certificateType := strings.ToLower(strings.TrimSpace(req.CertificateType))
+	if certificateType != "donor" && certificateType != "organizer" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid certificate type"})
+	}
+	recipient := strings.TrimSpace(req.Recipient)
+	if recipient == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Recipient address is required"})
+	}
+	certificateHash := strings.TrimSpace(req.CertificateHash)
+	if certificateHash == "" {
+		certificateHash = GenerateCertificateHash(req.CampaignID, req.DonationID, req.ProofID, recipient, certificateType)
+	}
 
 	cert, err := h.Queries.CreateCertificate(context.Background(), db.CreateCertificateParams{
 		CampaignID:       pgtype.UUID{Bytes: campUUID, Valid: true},
 		DonationID:       pgtype.UUID{Bytes: donUUID, Valid: true},
 		ProofID:          pgtype.UUID{Bytes: proofUUID, Valid: true},
-		RecipientAddress: req.Recipient,
-		CertificateType:  req.CertificateType,
-		CertificateHash:  req.CertificateHash,
+		RecipientAddress: recipient,
+		CertificateType:  certificateType,
+		CertificateHash:  certificateHash,
 	})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create certificate"})
@@ -109,4 +134,16 @@ func (h *CertificateHandler) UpdateCertificateTxHash(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{"status": "success"})
+}
+
+func GenerateCertificateHash(campaignID string, donationID string, proofID string, recipient string, certificateType string) string {
+	data := strings.Join([]string{
+		strings.ToLower(strings.TrimSpace(campaignID)),
+		strings.ToLower(strings.TrimSpace(donationID)),
+		strings.ToLower(strings.TrimSpace(proofID)),
+		strings.ToLower(strings.TrimSpace(recipient)),
+		strings.ToLower(strings.TrimSpace(certificateType)),
+	}, "|")
+	hash := sha256.Sum256([]byte(data))
+	return "0x" + hex.EncodeToString(hash[:])
 }
