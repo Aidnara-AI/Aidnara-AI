@@ -8,6 +8,7 @@ export default function CampaignDetailPage() {
   const [notice, setNotice] = createSignal("Loading campaign...");
   const [donationStatus, setDonationStatus] = createSignal("");
   const [proofStatus, setProofStatus] = createSignal("");
+  const [certificateStatus, setCertificateStatus] = createSignal("");
 
   onMount(async () => {
     try {
@@ -111,6 +112,38 @@ export default function CampaignDetailPage() {
           Save Proof
         </button>
         {proofStatus() && <p class="rounded-2xl border border-yellow-300/30 bg-yellow-300/10 p-4 text-gold">{proofStatus()}</p>}
+      </form>
+
+      <form class="grid gap-4 rounded-3xl border border-white/10 bg-[#0f1b2d]/70 p-6" onSubmit={(event) => submitJson(event, "/api/certificates", setCertificateStatus)}>
+        <h2 class="text-3xl font-bold">Create Certificate Record</h2>
+        <p class="text-muted">Register a certificate hash, then verify it at `/verify/certificate/[hash]`.</p>
+        <label class="grid gap-2 font-bold">
+          Donation ID
+          <input class="rounded-xl border border-white/10 bg-bg p-3" name="donation_id" placeholder="uuid" required />
+        </label>
+        <label class="grid gap-2 font-bold">
+          Proof ID
+          <input class="rounded-xl border border-white/10 bg-bg p-3" name="proof_id" placeholder="uuid" required />
+        </label>
+        <label class="grid gap-2 font-bold">
+          Recipient wallet
+          <input class="rounded-xl border border-white/10 bg-bg p-3" name="recipient_address" placeholder="0x..." required />
+        </label>
+        <label class="grid gap-2 font-bold">
+          Certificate type
+          <select class="rounded-xl border border-white/10 bg-bg p-3" name="certificate_type" required>
+            <option value="donor">Donor</option>
+            <option value="organizer">Organizer</option>
+          </select>
+        </label>
+        <label class="grid gap-2 font-bold">
+          Certificate hash
+          <input class="rounded-xl border border-white/10 bg-bg p-3" name="certificate_hash" placeholder="0x..." required />
+        </label>
+        <button class="rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 px-5 py-3 font-extrabold text-white" type="submit">
+          Save Certificate
+        </button>
+        {certificateStatus() && <p class="rounded-2xl border border-yellow-300/30 bg-yellow-300/10 p-4 text-gold">{certificateStatus()}</p>}
       </form>
     </main>
   );
