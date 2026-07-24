@@ -33,6 +33,8 @@ Updates the on-chain issuance transaction hash for an existing certificate.
 
 Looks up certificate verification data by deterministic certificate hash.
 
+Frontend verification page: `/verify/certificate/[hash]`.
+
 ### Response
 
 ```json

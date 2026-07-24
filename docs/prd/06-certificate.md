@@ -80,6 +80,8 @@ Use this URL shape:
 /verify/certificate/[hash]
 ```
 
+The SolidStart frontend implements this route and reads `GET /api/certificates/hash/:hash`.
+
 ## File Generation
 
 MVP options:
