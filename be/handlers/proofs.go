@@ -41,6 +41,9 @@ func (h *ProofHandler) ListProofsByCampaign(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get proofs"})
 	}
+	if proofs == nil {
+		proofs = []db.Proof{}
+	}
 
 	return c.JSON(proofs)
 }

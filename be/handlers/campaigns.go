@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"strings"
 
 	"aidnara-be/db/sqlc"
 
@@ -29,6 +30,9 @@ func (h *CampaignHandler) ListCampaigns(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to list campaigns"})
 	}
+	if campaigns == nil {
+		campaigns = []db.Campaign{}
+	}
 
 	return c.JSON(campaigns)
 }
@@ -52,12 +56,43 @@ func (h *CampaignHandler) GetCampaign(c *fiber.Ctx) error {
 
 // POST /api/campaigns
 func (h *CampaignHandler) CreateCampaign(c *fiber.Ctx) error {
-	var req db.CreateCampaignParams
+	type Request struct {
+		OwnerAddress     string `json:"owner_address"`
+		Title            string `json:"title"`
+		ShortDescription string `json:"short_description"`
+		LongDescription  string `json:"long_description"`
+		Category         string `json:"category"`
+		TargetAmount     string `json:"target_amount"`
+		CoverImageUrl    string `json:"cover_image_url"`
+		BeneficiaryName  string `json:"beneficiary_name"`
+		Location         string `json:"location"`
+		ExpectedImpact   string `json:"expected_impact"`
+	}
+	var req Request
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid input"})
 	}
+	if strings.TrimSpace(req.Title) == "" || strings.TrimSpace(req.OwnerAddress) == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Title and owner address are required"})
+	}
 
-	campaign, err := h.Queries.CreateCampaign(context.Background(), req)
+	var targetAmount pgtype.Numeric
+	if err := targetAmount.Scan(strings.TrimSpace(req.TargetAmount)); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid target amount"})
+	}
+
+	campaign, err := h.Queries.CreateCampaign(context.Background(), db.CreateCampaignParams{
+		OwnerAddress:     req.OwnerAddress,
+		Title:            req.Title,
+		ShortDescription: req.ShortDescription,
+		LongDescription:  req.LongDescription,
+		Category:         req.Category,
+		TargetAmount:     targetAmount,
+		CoverImageUrl:    req.CoverImageUrl,
+		BeneficiaryName:  req.BeneficiaryName,
+		Location:         req.Location,
+		ExpectedImpact:   req.ExpectedImpact,
+	})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create campaign"})
 	}

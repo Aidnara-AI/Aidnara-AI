@@ -127,6 +127,9 @@ func (h *DonationHandler) ListDonationsByCampaign(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get donations"})
 	}
+	if donations == nil {
+		donations = []db.Donation{}
+	}
 
 	return c.JSON(donations)
 }

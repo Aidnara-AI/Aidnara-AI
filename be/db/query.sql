@@ -85,5 +85,5 @@ RETURNING *;
 
 -- name: UpdateCertificateTxHash :exec
 UPDATE certificates
-SET issue_tx_hash = $2, status = 'issued', issued_at = NOW()
+SET issue_tx_hash = $2, status = 'registered', issued_at = NOW()
 WHERE id = $1;
