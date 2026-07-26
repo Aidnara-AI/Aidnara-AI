@@ -2,12 +2,12 @@ import { For } from "solid-js";
 
 export default function Home() {
   const features = [
-    "100% Transparent Smart Contracts",
-    "Real-time verifiable impact",
-    "No hidden transaction fees",
-    "AI-powered beneficiary matching",
-    "Instant fund distribution",
-    "Tamper-proof donation receipts"
+    "On-chain donations on BNB Smart Chain",
+    "AI-reviewed proof of fund usage",
+    "SHA-256 verified proof files",
+    "Public transparency dashboard",
+    "Verifiable impact certificates",
+    "BscScan-linked transactions"
   ];
 
   return (

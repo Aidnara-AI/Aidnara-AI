@@ -68,6 +68,7 @@ const requiredTerms = [
   ['api/proofs.md', ['POST /api/proofs', 'GET /api/campaigns/:id/proofs', 'Gemini', 'file_hash']],
   ['api/onchain-validation.md', ['DonationEventExpectation', 'Receipt', 'Event fields']],
   ['api/event-sync.md', ['Event sync persistence', 'DonationReceived', 'CertificateIssued']],
+  ['fe/src/routes/index.tsx', ['Aidnara AI', 'AI-reviewed proof', 'transparency dashboard', 'impact certificates']],
   ['fe/src/routes/campaigns.tsx', ['demoCampaigns', 'Campaign API unavailable', 'Start Campaign']],
   ['fe/src/routes/campaigns/create.tsx', ['owner_address', 'POST', '/api/uploads', '/api/campaigns', 'Create Campaign']],
   ['fe/src/routes/campaigns/[id].tsx', ['useParams', 'Campaign API unavailable', 'Transparency Dashboard', 'Donation Timeline', 'Proof Timeline', 'testnet.bscscan.com', '/api/donations', '/api/uploads', '/api/proofs', 'SHA-256', '/api/certificates', '/issue', 'Leave empty to generate']],
