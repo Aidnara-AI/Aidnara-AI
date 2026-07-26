@@ -1,5 +1,5 @@
 import { useParams } from "@solidjs/router";
-import { createSignal, onMount } from "solid-js";
+import { createMemo, createSignal, onMount } from "solid-js";
 
 type CertificateVerification = {
   status?: string;
@@ -15,6 +15,7 @@ type CertificateVerification = {
 export default function VerifyCertificatePage() {
   const params = useParams();
   const [certificate, setCertificate] = createSignal<CertificateVerification>();
+  const [found, setFound] = createSignal(true);
   const [notice, setNotice] = createSignal("Checking certificate...");
 
   onMount(async () => {
@@ -35,9 +36,18 @@ export default function VerifyCertificatePage() {
         });
         setNotice("Certificate API unavailable. Showing demo verification data.");
       } else {
-        setNotice("Certificate not found.");
+        setFound(false);
+        setNotice("");
       }
     }
+  });
+
+  const verdict = createMemo(() => {
+    if (!found()) return { label: "NOT FOUND", tone: "border-red-400/30 bg-red-400/10 text-red-300" };
+    const status = (certificate()?.status || "").toLowerCase();
+    if (status === "revoked") return { label: "REVOKED", tone: "border-red-400/30 bg-red-400/10 text-red-300" };
+    if (certificate()?.issue_tx_hash) return { label: "VALID ON-CHAIN", tone: "border-green-400/30 bg-green-400/10 text-green-300" };
+    return { label: "PENDING", tone: "border-yellow-300/30 bg-yellow-300/10 text-gold" };
   });
 
   return (
@@ -45,10 +55,10 @@ export default function VerifyCertificatePage() {
       <section class="grid gap-4 rounded-3xl border border-white/10 bg-[#0f1b2d]/70 p-6">
         <p class="text-gold font-bold uppercase tracking-[0.14em]">Aidnara AI</p>
         <h1 class="text-5xl font-bold">Verify Certificate</h1>
+        <strong class={`rounded-2xl border p-4 text-2xl uppercase tracking-[0.14em] ${verdict().tone}`}>{verdict().label}</strong>
         {notice() && <p class="rounded-2xl border border-yellow-300/30 bg-yellow-300/10 p-4 text-gold">{notice()}</p>}
         {certificate() && (
           <div class="grid gap-3 rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-5">
-            <strong class="text-gold uppercase tracking-[0.14em]">{certificate()!.status}</strong>
             <span>{certificate()!.certificate_type}</span>
             <code class="break-all text-white">{certificate()!.certificate_hash}</code>
             <p class="text-muted">Recipient: {certificate()!.recipient_address}</p>
