@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const root = path.resolve(__dirname, '..');
+const root = process.env.VERIFY_ROOT ? path.resolve(process.env.VERIFY_ROOT) : path.resolve(__dirname, '..');
 const requiredFiles = [
   'README.md',
   'fe/README.md',
