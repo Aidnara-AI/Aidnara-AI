@@ -45,3 +45,5 @@ broadcast/
 .supabase/
 .omx/
 .agents/
+# runtime uploads
+be/uploads/
