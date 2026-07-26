@@ -106,7 +106,7 @@ func CallGeminiJSON(prompt string, options GeminiOptions) (map[string]interface{
 // ParseJSONText strips markdown fencing from the AI response and parses it into a map.
 func ParseJSONText(text string) (map[string]interface{}, error) {
 	trimmed := strings.TrimSpace(text)
-	
+
 	// Strip markdown fences
 	trimmed = strings.TrimPrefix(trimmed, "```json")
 	trimmed = strings.TrimPrefix(trimmed, "```")

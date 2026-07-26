@@ -62,10 +62,10 @@ type OnchainValidationOptions struct {
 }
 
 type DonationEventExpectation struct {
-	TxHash         string
-	CampaignID     *big.Int
-	DonorAddress   string
-	Amount         *big.Int
+	TxHash       string
+	CampaignID   *big.Int
+	DonorAddress string
+	Amount       *big.Int
 }
 
 // ValidateDonationEvent verifies that a transaction contains the expected DonationReceived event.
@@ -92,7 +92,7 @@ func ValidateDonationEvent(ctx context.Context, opts OnchainValidationOptions, e
 	}
 
 	event := parsedABI.Events["DonationReceived"]
-	
+
 	for _, log := range receipt.Logs {
 		if log.Address.Cmp(contractAddr) != 0 {
 			continue

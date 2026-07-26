@@ -26,7 +26,6 @@ func main() {
 	_ = godotenv.Load()
 	_ = godotenv.Load("be/.env")
 
-
 	// Initialize Local Storage Directories
 	if err := services.InitStorage(); err != nil {
 		log.Fatalf("Failed to init storage: %v", err)
