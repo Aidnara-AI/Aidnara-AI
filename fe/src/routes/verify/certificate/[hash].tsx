@@ -74,6 +74,7 @@ export default function VerifyCertificatePage() {
                 View transaction on BscScan: {certificate()!.issue_tx_hash}
               </a>
             )}
+            <a class="text-cyan-300 underline" href={`/certificate/${params.hash}`}>Open printable certificate</a>
           </div>
         )}
       </section>
